@@ -16,9 +16,11 @@ public class Validator {
     Pattern enterYearPattern = Pattern.compile("^([0-9]{4})$");
     Matcher matcher;
 
-    Scanner userInput;
+    Console console;
 
     public void run() {
+        this.console = new Console();
+
         // delete
         this.cars[0] = new Car("Toyota", "Supra", 23155555, 1999, 333);
         this.cars[1] = new Car("Toyota", "LandCruiser", 23155555, 2009, 333);
@@ -37,7 +39,7 @@ public class Validator {
         while (!this.inputString.equals("")) {
             System.out.println("\nВведите данные об автомобиле в формате:");
             System.out.println("Марка модель, серийный номер (7 цифр), дата выпуска (4 цифры), цвет (3 цифры)");
-            this.readUserInput();
+            this.inputString = this.console.readString();
 
             if (this.inputString.equals("")) continue;
 
@@ -51,32 +53,31 @@ public class Validator {
                         Integer.parseInt(this.matcher.group(4)),
                         Integer.parseInt(this.matcher.group(5))
                 );
-                System.out.println("Добавлено.");
-                System.out.println("\nМашины в наличии:");
+                console.print("Добавлено.");
 
-                this.showAllCars();
+                this.console.showAllCars(this.cars);
 
                 this.nextCarNumber++;
             } else {
-                System.out.println("Неверный формат строки. Для выхода нажмите Enter.");
+                console.print("Неверный формат строки. Для выхода нажмите Enter.");
             }
         }
     }
 
     public void removeCarsByBrand() {
-        this.showAllCars();
+        this.console.showAllCars(this.cars);
 
-        System.out.println("\nВведите марку автомобилей, которые необходимо удалить:");
+        console.print("\nВведите марку автомобилей, которые необходимо удалить:");
 
         boolean deleted = false;
         while (!this.inputString.equals("")) {
-            this.readUserInput();
+            this.inputString = this.console.readString();
             if (this.inputString.equals("")) continue;
 
             for (int i = 0; i < this.cars.length; i++) {
                 if (this.cars[i] != null) {
                     if(this.inputString.equals(this.cars[i].brand)) {
-                        System.out.println("[DELETED] Удалено: " + this.cars[i].brand + " " + this.cars[i].model + ", " + this.cars[i].serialNumber + ", " + this.cars[i].yearOfIssue + " г.в., Цвет #" + this.cars[i].color);
+                        this.console.showSingleCar(this.cars[i], "[DELETED] Удалено: ");
 
                         this.cars[i] = null;
                         deleted = true;
@@ -87,20 +88,19 @@ public class Validator {
             if(deleted) {
                 this.inputString = "";
             } else {
-                System.out.println("Машин с такой маркой не найдено.\n" +
+                this.console.print("Машин с такой маркой не найдено.\n" +
                         "Попробуйте ещё раз или используйте Enter для продолжения.");
             }
         }
 
-        System.out.println("\nАвтомобили:");
-        this.showAllCars();
+        this.console.showAllCars(this.cars);
     }
 
     public void duplicateCarsByYear() {
-        System.out.println("\nВведите год выпуска:");
+        this.console.print("\nВведите год выпуска:");
 
         while (!this.inputString.equals("")) {
-            this.readUserInput();
+            this.inputString = this.console.readString();
             int enteredYear = Integer.parseInt(this.inputString);
 
             this.matcher = this.enterYearPattern.matcher(this.inputString);
@@ -119,7 +119,7 @@ public class Validator {
                                     this.cars[i].color
                             );
 
-                            System.out.println("[ADDED] Добавлено: " + this.cars[this.nextCarNumber].brand + " " + this.cars[this.nextCarNumber].model + ", " + this.cars[this.nextCarNumber].serialNumber + ", " + this.cars[this.nextCarNumber].yearOfIssue + " г.в., Цвет #" + this.cars[this.nextCarNumber].color);
+                            this.console.showSingleCar(this.cars[this.nextCarNumber], "[ADDED] Добавлено: ");
 
                             this.nextCarNumber++;
                         }
@@ -128,24 +128,10 @@ public class Validator {
 
                 this.inputString = "";
             } else {
-                System.out.println("Неверный год. Для выхода нажмите Enter.");
+                this.console.print("Неверный год. Для выхода нажмите Enter.");
             }
         }
 
-        System.out.println("\nАвтомобили:");
-        this.showAllCars();
-    }
-
-    public void showAllCars() {
-        for (Car car : this.cars) {
-            if (car != null) {
-                System.out.println(car.brand + " " + car.model + ", " + car.serialNumber + ", " + car.yearOfIssue + " г.в., Цвет #" + car.color);
-            }
-        }
-    }
-
-    public void readUserInput() {
-        this.userInput = new Scanner(System.in);
-        this.inputString = this.userInput.nextLine();
+        this.console.showAllCars(this.cars);
     }
 }
